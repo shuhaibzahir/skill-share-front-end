@@ -13,19 +13,19 @@ export default function NewTaskPage() {
     // Redirect if not logged in or not a user
     if (!user) {
       router.push("/auth/login");
-    } else if (user.role !== "user") {
+    } else if (user.data.role !== "user") {
       router.push("/dashboard/provider");
     }
   }, [user, router]);
 
-  if (!user || user.role !== "user") {
+  if (!user || user.data.role !== "user") {
     return null;
   }
 
   return (
     <div className="container py-12 max-w-3xl">
       <h1 className="text-3xl font-bold mb-8">Create New Task</h1>
-      <TaskForm userId={user.id} />
+      <TaskForm userId={user.data.id} />
     </div>
   );
 }

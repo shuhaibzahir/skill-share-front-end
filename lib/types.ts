@@ -2,18 +2,23 @@
 
 export type UserRole = 'user' | 'provider';
 
-export type Category = 'Web Development' | 'Design' | 'Tutoring';
+export type Category = 'fullstack' | 'backend' | 'frontend';
 
 export type Currency = 'USD' | 'AUD' | 'SGD' | 'INR';
 
 export type WorkType = 'Online' | 'Onsite';
 
 export interface User {
+  token: string;
+  data:{
   id: string;
   name: string;
   email: string;
   role: UserRole;
+  }
 }
+
+
 
 export interface Task {
   id: string;
@@ -21,8 +26,8 @@ export interface Task {
   category: Category;
   name: string;
   description: string;
-  startDate: string; // ISO date string
-  workingHours: number;
+  expectedStartDate: string; // ISO date string
+  expectedWorkingHours: number;
   hourlyRate: number;
   currency: Currency;
   status: 'open' | 'in-progress' | 'completed';
@@ -53,6 +58,6 @@ export interface Offer {
 }
 
 // Mock data
-export const CATEGORIES: Category[] = ['Web Development', 'Design', 'Tutoring'];
+export const CATEGORIES: Category[] = ['fullstack', 'backend', 'frontend'];
 export const CURRENCIES: Currency[] = ['USD', 'AUD', 'SGD', 'INR'];
 export const WORK_TYPES: WorkType[] = ['Online', 'Onsite'];

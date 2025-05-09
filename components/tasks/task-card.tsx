@@ -44,11 +44,11 @@ export function TaskCard({ task, isProvider = false, hasOffered = false, onClick
         <div className="grid grid-cols-2 gap-2 text-sm mb-2">
           <div className="flex items-center gap-1.5">
             <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-            <span>{formatDate(task.startDate)}</span>
+            <span>{formatDate(task.expectedStartDate)}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <ClockIcon className="h-4 w-4 text-muted-foreground" />
-            <span>{task.workingHours} hours</span>
+            <span>{task.expectedWorkingHours} hours</span>
           </div>
         </div>
         

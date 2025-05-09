@@ -12,11 +12,12 @@ import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { getTasks } from "@/api/taskService";
 
 export default function UserDashboard() {
   const { user } = useAuth();
   const router = useRouter();
-  const [userTasks, setUserTasks] = useState<Task[]>([]);
+  const [userTasks, setUserTasks] = useState<any[]>([]);
   const [userOffers, setUserOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,8 +31,17 @@ export default function UserDashboard() {
       return;
     }
 
-    // Simulate API calls
-    setUserTasks(mockTasks.filter(task => task.userId === user.id));
+    // Fetch user tasks and offers
+    getTasks().then((res) => {
+      if (!res) {   
+        toast.error("Failed to fetch tasks");
+        return;
+      }
+      const tasks = res.data.data;
+      setUserTasks(tasks)
+
+    })
+  
     
     // Get all offers for the user's tasks
     const offers = mockTasks

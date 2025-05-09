@@ -26,13 +26,14 @@ import {
 import { CATEGORIES, CURRENCIES, Category, Currency, Task } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { createTask, updateTask } from "@/api/taskService";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Task name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
   category: z.enum(CATEGORIES as [Category, ...Category[]]),
-  startDate: z.string().min(1, { message: "Start date is required" }),
-  workingHours: z.coerce.number().min(1, { message: "Working hours must be at least 1" }),
+  expectedStartDate: z.string().min(1, { message: "Start date is required" }),
+  expectedWorkingHours: z.coerce.number().min(1, { message: "Working hours must be at least 1" }),
   hourlyRate: z.coerce.number().min(1, { message: "Hourly rate must be at least 1" }),
   currency: z.enum(CURRENCIES as [Currency, ...Currency[]]),
 });
@@ -54,16 +55,16 @@ export function TaskForm({ task, userId }: TaskFormProps) {
       name: task.name,
       description: task.description,
       category: task.category,
-      startDate: task.startDate,
-      workingHours: task.workingHours,
+      expectedStartDate: task.expectedStartDate,
+      expectedWorkingHours: task.expectedWorkingHours,
       hourlyRate: task.hourlyRate,
       currency: task.currency,
     } : {
       name: "",
       description: "",
       category: "Web Development",
-      startDate: "",
-      workingHours: 10,
+      expectedStartDate: "",
+      expectedWorkingHours: 10,
       hourlyRate: 25,
       currency: "USD",
     },
@@ -74,9 +75,10 @@ export function TaskForm({ task, userId }: TaskFormProps) {
     try {
       // In a real app, this would be an API call
       console.log("Form values:", values);
+      const response = task
+        ? await updateTask({ ...values, userId }, task.id)
+        : await createTask({ ...values, userId });
       
-      // Simulate API latency
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
       if (task) {
         toast.success("Task updated successfully");
@@ -155,7 +157,7 @@ export function TaskForm({ task, userId }: TaskFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
-            name="startDate"
+            name="expectedStartDate"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Expected Start Date</FormLabel>
@@ -169,7 +171,7 @@ export function TaskForm({ task, userId }: TaskFormProps) {
           
           <FormField
             control={form.control}
-            name="workingHours"
+            name="expectedWorkingHours"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Expected Working Hours</FormLabel>

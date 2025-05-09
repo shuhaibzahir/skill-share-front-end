@@ -13,12 +13,13 @@ import { CalendarIcon, CheckIcon, ClockIcon, DollarSign, EditIcon } from "lucide
 import Link from "next/link";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+import { getTask } from "@/api/taskService";
 
 export default function TaskDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
   const router = useRouter();
-  const [task, setTask] = useState<Task | null>(null);
+  const [task, setTask] = useState<any>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,27 +28,33 @@ export default function TaskDetailPage() {
     if (!user) {
       router.push("/auth/login");
       return;
-    } else if (user.role !== "user") {
+    } else if (user.data.role !== "user") {
       router.push("/dashboard/provider");
       return;
     }
 
-    // Get task details
-    const taskId = Array.isArray(id) ? id[0] : id;
-    const foundTask = mockTasks.find(t => t.id === taskId);
-    
-    if (!foundTask || foundTask.userId !== user.id) {
-      router.push("/dashboard/user");
-      return;
-    }
-    
-    setTask(foundTask);
+    // Fetch task details
+    getTask(id)
+      .then((res) => {
+        if (!res.data) {
+          toast.error("Task not found");
+          router.push("/dashboard/user");
+          return;
+        }
+        setTask(res.data.data);
+        const taskOffers = mockOffers.filter(offer => offer.taskId === id);
+        setOffers(taskOffers);
+        
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to fetch task details");
+        router.push("/dashboard/user");
+      })
     
     // Get offers for this task
-    const taskOffers = mockOffers.filter(offer => offer.taskId === taskId);
-    setOffers(taskOffers);
-    
-    setIsLoading(false);
+
   }, [id, user, router]);
 
   const handleAcceptOffer = async (offerId: string) => {
@@ -171,14 +178,14 @@ export default function TaskDetailPage() {
               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
               <div>
                 <h3 className="text-sm font-medium">Start Date</h3>
-                <p className="text-sm text-muted-foreground">{formatDate(task.startDate)}</p>
+                <p className="text-sm text-muted-foreground">{formatDate(task.expectedStartDate)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <ClockIcon className="h-4 w-4 text-muted-foreground" />
               <div>
                 <h3 className="text-sm font-medium">Working Hours</h3>
-                <p className="text-sm text-muted-foreground">{task.workingHours} hours</p>
+                <p className="text-sm text-muted-foreground">{task.expectedWorkingHours} hours</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -207,7 +214,7 @@ export default function TaskDetailPage() {
             </div>
             <div className="flex justify-between items-center mb-1 pt-1 border-t">
               <span className="text-sm font-medium">Total Budget</span>
-              <span className="font-bold">{formatCurrency(task.hourlyRate * task.workingHours, task.currency)}</span>
+              <span className="font-bold">{formatCurrency(task.hourlyRate * task.expectedWorkingHours, task.currency)}</span>
             </div>
           </div>
           

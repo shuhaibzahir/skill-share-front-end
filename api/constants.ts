@@ -3,5 +3,7 @@ const ENPDPOINTS = {
     // API URL
     USER_SIGNING_UP: `${API_URL}/auth/register`,
     USER_SIGNING_IN: `${API_URL}/auth/login`,
+    //Task
+    TASKS: `${API_URL}/tasks`,
 }
 export default ENPDPOINTS;
